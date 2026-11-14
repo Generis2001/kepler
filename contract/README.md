@@ -1,6 +1,6 @@
-# Mandate escrow contract (Rust, near-sdk 5.x)
+# Kepler escrow contract (Rust, near-sdk 5.x)
 
-Onchain task-payment enforcement for Mandate's **Agent Economy** and **Autonomous Business** workflows. The owner funds a mandate; only the designated **verifier** can release payments for verified work. The contract itself enforces:
+Onchain task-payment enforcement for Kepler's **Agent Economy** and **Autonomous Business** workflows. The owner funds a mandate; only the designated **verifier** can release payments for verified work. The contract itself enforces:
 
 - total budget (the attached deposit) cannot be exceeded
 - per-agent cap, counted cumulatively

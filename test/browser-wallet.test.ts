@@ -125,7 +125,7 @@ describe('Meteor browser wallet flow', () => {
   });
 
   it.each([
-    'Send 2 USDT to payee.testnet', 'Please Mandate, withdraw 1 NEAR', 'Stake 1 NEAR', 'Unstake 3 USDT',
+    'Send 2 USDT to payee.testnet', 'Please Kepler, withdraw 1 NEAR', 'Please Mandate, withdraw 1 NEAR', 'Stake 1 NEAR', 'Unstake 3 USDT',
     'Claim 1 NEAR', 'Swap 1 NEAR for USDT', 'Exchange 2 USDT for NEAR',
     'Refund escrow m_' + 'a'.repeat(40), 'Add payee.testnet to my allowlist',
     'Research solar energy; research fee 0.037 NEAR',
@@ -141,7 +141,8 @@ describe('Meteor browser wallet flow', () => {
     expect(f.client.signMessage).toHaveBeenCalledTimes(2);
     const first = f.client.signMessage.mock.calls[0][1], second = f.client.signMessage.mock.calls[1][1];
     expect(first.message).toContain('\n\nApprove this agent action:\n' + options.body);
-    expect(first.recipient).toBe('mandate');
+    expect(first.recipient).toBe('Kepler');
+    expect(first.message).toMatch(/^Kepler wallet request\n/);
     expect(Buffer.from(first.nonce).equals(Buffer.from(second.nonce))).toBe(false);
   });
 
@@ -165,7 +166,7 @@ describe('Meteor browser wallet flow', () => {
     const options = { method: 'POST', body: '{"action":"withdraw","asset":"NEAR","amount":"1"}' };
     f.client.signMessage.mockRejectedValueOnce(new Error('Action was cancelled'));
     await expect(f.wallet.fetch('/api/wallet/execute', options)).rejects.toThrow('cancelled');
-    f.client.signMessage.mockResolvedValueOnce(signProof(KeyPair.fromRandom('ed25519'), 'bob.testnet', { message: 'wrong account', nonce: new Uint8Array(32), recipient: 'mandate' }));
+    f.client.signMessage.mockResolvedValueOnce(signProof(KeyPair.fromRandom('ed25519'), 'bob.testnet', { message: 'wrong account', nonce: new Uint8Array(32), recipient: 'Kepler' }));
     await expect(f.wallet.fetch('/api/wallet/execute', options)).rejects.toThrow('linked account');
     let finish: () => void = () => {};
     f.client.signMessage.mockImplementationOnce(async (account, params) => {

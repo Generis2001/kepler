@@ -53,7 +53,7 @@ describe('wallet ownership proofs', () => {
     const tag = Buffer.alloc(4); tag.writeUInt32LE(2147483648 + 413);
     const nonce = Buffer.alloc(32, 7);
     const message = requestMessage('alice.testnet', 'POST', '/api/wallet/execute', body, timestamp, approval);
-    const digest = createHash('sha256').update(Buffer.concat([tag, str(message), nonce, str('mandate'), Buffer.from([0])])).digest();
+    const digest = createHash('sha256').update(Buffer.concat([tag, str(message), nonce, str('Kepler'), Buffer.from([0])])).digest();
     const headers = { 'x-mandate-auth-type': 'nep413', ...(approval ? { 'x-mandate-approval': 'request' } : {}), 'x-mandate-nonce': nonce.toString('base64'), 'x-mandate-timestamp': timestamp,
       'x-mandate-public-key': key.getPublicKey().toString(), 'x-mandate-signature': Buffer.from(key.sign(digest).signature).toString('base64') };
     await verifyWalletRequest(provider, 'alice.testnet', 'POST', '/api/wallet/execute', body, headers);

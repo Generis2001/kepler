@@ -1,8 +1,8 @@
 [package]
-name = "mandate-escrow"
+name = "kepler-escrow"
 version = "0.1.0"
 edition = "2021"
-description = "Mandate: onchain escrow that enforces budget, per-agent cap, allowlist and verifier-only release."
+description = "Kepler: onchain escrow that enforces budget, per-agent cap, allowlist and verifier-only release."
 
 [lib]
 crate-type = ["cdylib", "rlib"]

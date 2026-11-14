@@ -1,16 +1,20 @@
-# Mandate
+# Kepler
 
 ### Onchain treasury, agent payments, and autonomous business on NEAR
 
-**Mandate** is an onchain workspace for **Unstoppable DeFi**, **Agent Economy**, and **Autonomous Business**. A user sets a directive and spending constraints; specialist agents retrieve and verify public-source research, and an explicitly authorized fee settles through NEAR escrow. The same workspace manages a separate agent treasury for deposits, withdrawals, token swaps, payments, and staking, with confirmed testnet transaction receipts.
+**Kepler** is an onchain workspace for **Unstoppable DeFi**, **Agent Economy**, and **Autonomous Business**. A user sets a directive and spending constraints; specialist agents retrieve and verify public-source research, and an explicitly authorized fee settles through NEAR escrow. The same workspace manages a separate agent treasury for deposits, withdrawals, token swaps, payments, and staking, with confirmed testnet transaction receipts.
 
 Hosted testnet demo: **[https://mandateme.vercel.app](https://mandateme.vercel.app)**
+
+Repository: **[Generis2001/kepler](https://github.com/Generis2001/kepler)**
+
+Kepler is the new name of this project. The hosted demo URL, deployed NEAR account IDs, database settings, and saved wallet data retain their original identifiers so existing balances, approvals, conversations, and receipts remain accessible. The workflows and functionality are unchanged.
 
 ## Judge guide
 
 Built for **NEAR HACKATHON: Build Beyond Boundaries**, with the requested tracks **Unstoppable DeFi** (`defi`), **Agent Economy** (`agents`), and **Autonomous Business** (`business`). The repository's commits begin on October 22, 2026, within the October 19–November 14 build window in [HACKATHON.md, Q-001](https://nearhackathon.com/HACKATHON.md). Q-010 permits testnet projects, and Q-011 makes the listed integrations optional.
 
-| Track | What to evaluate in Mandate | Where to see it |
+| Track | What to evaluate in Kepler | Where to see it |
 | --- | --- | --- |
 | **Unstoppable DeFi** (`defi`) | Natural-language treasury operations, market-reference testnet swaps, optional Ref Finance pool execution, and staking with on-chain receipts. | **Swap tokens**, **Agent wallet**, and [swap pricing](#testnet-swap-pricing). |
 | **Agent Economy** (`agents`) | Separate specialist roles produce and verify work; a user-authorized research fee pays the researcher through budget-limited NEAR escrow. | Core walkthrough steps 3–5 and **Settlement ledger**. |
@@ -62,10 +66,10 @@ If public feeds are unreachable or required evidence is missing, expect a partia
 
 ## NEAR features and deployed contracts
 
-| NEAR feature used | What it enables in Mandate | Implementation |
+| NEAR feature used | What it enables in Kepler | Implementation |
 | --- | --- | --- |
 | Named accounts and implicit accounts | A linked testnet account identifies the owner. Each owner gets a separate agent account derived from a stable server secret; its address is the Ed25519 public key encoded as 64 hexadecimal characters. | [Agent account derivation and balances](src/agent-wallet.ts) |
-| Function-call access keys and NEP-413 message proofs | Meteor installs a browser authentication key scoped to the configured server account and `mandate_auth`. Signed API requests bind the owner, route, body and timestamp, and the backend checks that the key is still installed. Meteor also supports NEP-413 proofs. | [Meteor adapter](src/browser/meteor.ts), [browser request signing](public/wallet.js), [ownership verification](src/wallet-auth.ts) |
+| Function-call access keys and NEP-413 message proofs | Meteor installs a browser authentication key scoped to the configured server account and `kepler_auth`. Signed API requests bind the owner, route, body and timestamp, and the backend checks that the key is still installed. Meteor also supports NEP-413 proofs. | [Meteor adapter](src/browser/meteor.ts), [browser request signing](public/wallet.js), [ownership verification](src/wallet-auth.ts) |
 | NEAR smart contracts and native transfers | The user funds escrow from the agent account. The contract enforces budget, cumulative per-agent cap, recipient allowlist, verifier authority and one payout per task; transfer callbacks account for failed payouts and refunds. | [Escrow contract](contract/src/lib.rs), [funding and release adapter](src/escrow.ts) |
 | NEP-141 tokens and NEP-145 storage | Test USDT deposits, sends and staking use token transfer calls, with storage registration when required. Token resolver receipts establish the amount actually accepted. | [Wallet transaction adapters](src/agent-wallet.ts), [Test USDT vault](staking-contract/src/lib.rs) |
 | Market-reference testnet treasury settlement | An observed NEAR/USDT price determines an integer-unit payout, saved before funding. Final native and token-transfer receipts establish settlement. | [Market-reference pricing](src/market-swap.ts), [swap execution](src/agent-wallet.ts) |
@@ -73,7 +77,7 @@ If public feeds are unreachable or required evidence is missing, expect a partia
 | Standard NEAR staking-pool interface | The agent stakes with `deposit_and_stake`, unstakes shares, reads live positions and withdraws after the validator cooldown. | [Staking execution and position views](src/agent-wallet.ts) |
 | Final NEAR RPC receipts and NearBlocks | Operations save the signed transaction hash before broadcast and query final outcomes. The ledger and history expose receipts; reconciliation avoids signing a duplicate after an ambiguous response. | [Wallet execution](src/agent-wallet.ts), [durable operations](src/wallet-store.ts), [receipt audit](src/receipt-audit.ts) |
 
-The backend controls the agent accounts' signing keys. General wallet spending checks run on the server; escrow additionally enforces its payment constraints on-chain. The scoped browser key proves ownership for Mandate requests, while deposits still need a linked-wallet transaction signature. Evidence checks are performed by local deterministic specialists and approved by a configured verifier signer. This prototype does not use confidential inference or cross-chain settlement.
+The backend controls the agent accounts' signing keys. General wallet spending checks run on the server; escrow additionally enforces its payment constraints on-chain. The scoped browser key proves ownership for Kepler requests, while deposits still need a linked-wallet transaction signature. Evidence checks are performed by local deterministic specialists and approved by a configured verifier signer. This prototype does not use confidential inference or cross-chain settlement.
 
 These existing testnet contracts are the defaults for a fresh local setup; no contract deployment is needed to follow the walkthrough. Overrides must implement the interfaces described later in this README.
 
@@ -92,7 +96,7 @@ The default research recipient is [`mandate-generis-researcher.testnet`](https:/
 
 ## Specialist agents without paid APIs
 
-Mandate runs three separate local specialists under the Orchestrator. No paid model service or API key is used, including when old OpenAI environment variables remain configured. Research fees are optional and use testnet NEAR through verified escrow.
+Kepler runs three separate local specialists under the Orchestrator. No paid model service or API key is used, including when old OpenAI environment variables remain configured. Research fees are optional and use testnet NEAR through verified escrow.
 
 - **Orchestrator:** preserves the requested subject, creates tasks and records the spending directive. Research alone never authorizes a purchase or transfer; fee amounts must be explicit.
 - **Researcher:** searches public indexes from a plain-language topic; supplied links are optional. DuckDuckGo and Bing have Google and Wikipedia search fallbacks. Search results only locate pages: their snippets are never evidence. The researcher reads publications, follows relevant documentation, delivery policies and primary references, and performs a second search pass for unresolved requirements. Retrieval is bounded to 38 seconds and 32 requests to fit the serverless runtime.
@@ -101,7 +105,7 @@ Mandate runs three separate local specialists under the Orchestrator. No paid mo
 
 Try **Research and analyze the benefits and risks of solar energy in Nigeria**, **Research the NEAR consensus mechanism**, or **Find three suppliers of 100 office chairs and compare published prices and delivery terms**. No source links are required. Add links when you have particular publications or suppliers in mind. **Compare NEAR and USDT market prices and pool liquidity on Ref Finance** uses free Ref Finance mainnet feeds and does not place a trade. Swap commands obtain their own current quote. Other NEAR questions use topic research rather than being substituted with token prices.
 
-Public pages may block retrieval or omit facts. Mandate tries alternative discovery and published references, returns only supported passages, and asks for details such as a delivery destination or payment corridor when needed. It cannot guarantee that private or unpublished facts exist online. A verified report establishes source provenance and requested coverage, rather than independently certifying every publisher claim. Deterministic extraction and arithmetic run alongside optional local model reasoning.
+Public pages may block retrieval or omit facts. Kepler tries alternative discovery and published references, returns only supported passages, and asks for details such as a delivery destination or payment corridor when needed. It cannot guarantee that private or unpublished facts exist online. A verified report establishes source provenance and requested coverage, rather than independently certifying every publisher claim. Deterministic extraction and arithmetic run alongside optional local model reasoning.
 
 ### Local model reasoning
 
@@ -139,42 +143,42 @@ VERIFIER_ACCOUNT_ID=mandate-generis-verifier.testnet
 VERIFIER_PRIVATE_KEY=ed25519:...
 ```
 
-These optional overrides are blockchain account credentials, not paid API keys. Set both verifier override values together. The owner agent and verifier need free faucet testnet NEAR for gas; this research escrow flow rejects mainnet. An ambiguous transaction pauses spending for reconciliation. If a payout fails, reconcile its receipt, then use **Refund escrow m_<mandate-id>** with the exact `mandateId` shown in the saved wallet operation. Mandate closes the owner-controlled mandate and refunds its remaining funds to the agent wallet. Depositing and releasing escrow are separate transactions.
+These optional overrides are blockchain account credentials, not paid API keys. Set both verifier override values together. The owner agent and verifier need free faucet testnet NEAR for gas; this research escrow flow rejects mainnet. An ambiguous transaction pauses spending for reconciliation. If a payout fails, reconcile its receipt, then use **Refund escrow m_<mandate-id>** with the exact `mandateId` shown in the saved wallet operation. Kepler closes the owner-controlled mandate and refunds its remaining funds to the agent wallet. Depositing and releasing escrow are separate transactions.
 
-With local reasoning enabled, Mandate verifies wallet ownership before model work starts. A requested fee opens Meteor for fresh signed approval of that directive; the backend rechecks the installed signing key before settlement after long research. Research without an explicit fee never moves funds. Access to private settlement-history audits requires ownership verification before receipt lookups.
+With local reasoning enabled, Kepler verifies wallet ownership before model work starts. A requested fee opens Meteor for fresh signed approval of that directive; the backend rechecks the installed signing key before settlement after long research. Research without an explicit fee never moves funds. Access to private settlement-history audits requires ownership verification before receipt lookups.
 
 **Audit past purchases in the settlement ledger** loads this wallet's latest 50 stored operations and queries their final NEAR receipts. Missing or mismatched receipts are reported. An empty ledger stays empty; no settlements or compliance percentages are seeded or invented.
 
 ## Conversation history
 
-Every sent message and Mandate response is saved, including transaction receipts and completed mandate results. Past chats appear under **Conversations** in the sidebar. Select any chat to revisit it; refreshing or returning to the workspace restores the last conversation opened for that wallet. **New conversation** starts a separate thread while keeping earlier chats available.
+Every sent message and Kepler response is saved, including transaction receipts and completed mandate results. Past chats appear under **Conversations** in the sidebar. Select any chat to revisit it; refreshing or returning to the workspace restores the last conversation opened for that wallet. **New conversation** starts a separate thread while keeping earlier chats available.
 
 Replies are paired with the exact directive that started them, including when multiple mandates finish out of order or the history refreshes during execution. Live agent steps appear in a subtle expandable disclosure above the report. It stays folded by default; expand it to inspect the workflow, verification gaps, source receipts, budgets and settlement. The report and its evidence-linked comparisons remain visible below it.
 
 Chats are backed up in the browser before syncing, and interrupted saves retry when you return or reconnect. Each linked wallet maintains its own history. PostgreSQL writes finish before a save is acknowledged on serverless deployments; configure `DATABASE_URL` or `POSTGRES_URL` for cloud history across devices. Local development saves to the persistent SQLite database. Conversation titles are listed separately from full messages so older chats remain accessible without loading every transcript at startup.
 
-Approved payees are also stored per wallet in PostgreSQL when configured, or in persistent SQLite locally. Additions and removals finish saving before Mandate reports success. The initial agent payees are seeded once for each wallet; a removed payee stays removed after refreshing, reconnecting or restarting the server. Database failures block new spending checks instead of trusting a temporary local approval list.
+Approved payees are also stored per wallet in PostgreSQL when configured, or in persistent SQLite locally. Additions and removals finish saving before Kepler reports success. The initial agent payees are seeded once for each wallet; a removed payee stays removed after refreshing, reconnecting or restarting the server. Database failures block new spending checks instead of trusting a temporary local approval list.
 
 ## Agent wallet and single-command mandates
 
-Each linked NEAR account has its own Mandate-controlled **implicit NEAR account**. Its address is the stable public key encoded as 64 hexadecimal characters. The backend derives and signs with this wallet; the linked wallet signs deposits. Linked balances and agent balances are displayed separately. New profiles receive no synthetic NEAR or USDT credit. Available funds, stake balances, and cooldowns come from final on-chain views.
+Each linked NEAR account has its own Kepler-controlled **implicit NEAR account**. Its address is the stable public key encoded as 64 hexadecimal characters. The backend derives and signs with this wallet; the linked wallet signs deposits. Linked balances and agent balances are displayed separately. New profiles receive no synthetic NEAR or USDT credit. Available funds, stake balances, and cooldowns come from final on-chain views.
 
 - `Deposit 2 NEAR` or `Deposit 5 USDT`: prepare a transfer for the linked wallet to sign. Deposit NEAR first to activate the agent account and pay network gas. USDT storage registration is included when needed.
 - `Withdraw 2 NEAR` or `Withdraw 5 USDT`: send agent funds back to the linked owner.
 - `Swap 0.1 NEAR for USDT` or `Swap 0.1 USDT for NEAR`: settle at the observed NEAR/USDT market reference on testnet, with a default 2% output tolerance and no swap fee; network gas is separate. Funds return to the agent wallet. The Swap panel shows the rate, source, quote age, and an editable minimum output. Quotes expire after 60 seconds. `SWAP_MODE=ref` instead executes a Ref testnet pool quote, including pool fees and price impact.
 - `Send 2 USDT to alice.testnet` / `Pay 1 NEAR to alice.testnet`: pay from the agent wallet after checking the recipient allowlist. Research uses no paid API. Optional, explicitly requested research fees use the user's agent account through verified testnet escrow.
 - `Stake 1 NEAR` / `Stake 5 USDT`: deposit to the configured staking provider.
-- `Unstake 1 NEAR` / `Unstake 5 USDT`: start the provider's unbonding process. While a workspace authorized with Meteor Wallet remains open, Mandate checks every 30 seconds and collects available funds. When the workspace is closed, collection resumes on reopening; this is not a background scheduling service. `Claim 1 NEAR` or the **Withdraw unstaked funds** control also collects matured funds.
+- `Unstake 1 NEAR` / `Unstake 5 USDT`: start the provider's unbonding process. While a workspace authorized with Meteor Wallet remains open, Kepler checks every 30 seconds and collects available funds. When the workspace is closed, collection resumes on reopening; this is not a background scheduling service. `Claim 1 NEAR` or the **Withdraw unstaked funds** control also collects matured funds.
 
-Open **Agent wallet** for balances, deposit/withdraw/stake/unstake controls, an explorer address link, and receipt links. Mandate retains a **0.02 NEAR gas reserve** and enforces single-transaction caps of 20 NEAR / 100 Test USDT, plus existing mainnet configuration limits. Staked balances cannot be spent until withdrawn.
+Open **Agent wallet** for balances, deposit/withdraw/stake/unstake controls, an explorer address link, and receipt links. Kepler retains a **0.02 NEAR gas reserve** and enforces single-transaction caps of 20 NEAR / 100 Test USDT, plus existing mainnet configuration limits. Staked balances cannot be spent until withdrawn.
 
-Linking an address allows viewing and funding; it does not authorize spending. Choose **Meteor Wallet** or **Authorize agent spending with Meteor Wallet** to connect through Meteor's official SDK, using its web wallet or browser extension. Meteor installs a restricted authentication access key (receiver: the configured treasury, method: `mandate_auth`) for account access and history synchronization. Every user-issued send, withdrawal, swap, stake, unstake, claim, escrow refund or nonzero research fee opens a fresh Meteor NEP-413 message approval, even when that key is saved. Payee changes and user-requested recovery actions also require fresh approval. The message includes the exact request and binds its account, route, body, timestamp and nonce; cancellation or a changed wallet prevents submission. The existing agent wallet signs the resulting on-chain transactions. Deposits use Meteor's linked-wallet transaction signature. Collection after an approved unstake retains the original automatic cooldown flow. Disconnecting removes the local authentication key and SDK connection; it does not erase balances or on-chain access keys.
+Linking an address allows viewing and funding; it does not authorize spending. Choose **Meteor Wallet** or **Authorize agent spending with Meteor Wallet** to connect through Meteor's official SDK, using its web wallet or browser extension. Meteor installs a restricted authentication access key (receiver: the configured treasury, method: `kepler_auth`) for account access and history synchronization. Every user-issued send, withdrawal, swap, stake, unstake, claim, escrow refund or nonzero research fee opens a fresh Meteor NEP-413 message approval, even when that key is saved. Payee changes and user-requested recovery actions also require fresh approval. The message includes the exact request and binds its account, route, body, timestamp and nonce; cancellation or a changed wallet prevents submission. The existing agent wallet signs the resulting on-chain transactions. Deposits use Meteor's linked-wallet transaction signature. Collection after an approved unstake retains the original automatic cooldown flow. Disconnecting removes the local authentication key and SDK connection; it does not erase balances or on-chain access keys.
 
-**Mandate Test USDT** (`usdt.fakes.testnet`, 6 decimals) is a development token, is not issued by Tether, has no real monetary value, and is not redeemable for dollars.
+**Kepler Test USDT** (`usdt.fakes.testnet`, 6 decimals) is a development token, is not issued by Tether, has no real monetary value, and is not redeemable for dollars.
 
 ### Staking provider setup
 
-Testnet defaults are an active NEAR validator pool and Mandate's deployed Test USDT vault. The vault holds transferred tokens, applies a 60-second unstaking cooldown, and distributes rewards only when actual tokens are deposited with `{"action":"fund_rewards"}`. No fixed yield is promised. USDT vault staking is token custody with funded rewards; it does not validate the NEAR network.
+Testnet defaults are an active NEAR validator pool and Kepler's deployed Test USDT vault. The vault holds transferred tokens, applies a 60-second unstaking cooldown, and distributes rewards only when actual tokens are deposited with `{"action":"fund_rewards"}`. No fixed yield is promised. USDT vault staking is token custody with funded rewards; it does not validate the NEAR network.
 
 ```env
 # Keep this master key stable and backed up. Changing it changes every derived agent address.
@@ -190,7 +194,7 @@ The NEAR adapter supports the standard staking-pool interface: `deposit_and_stak
 
 USDT has no native validator staking mechanism. Its adapter requires a compatible token yield/staking contract with this explicit ABI:
 
-- Accept NEP-141 `ft_transfer_call` from the configured USDT token, using `msg: {"action":"stake"}`. Attribute the position to `sender_id` (the agent account) and return the unused token amount. Mandate checks the token resolver's final used amount, so a refunded stake is never reported as successful.
+- Accept NEP-141 `ft_transfer_call` from the configured USDT token, using `msg: {"action":"stake"}`. Attribute the position to `sender_id` (the agent account) and return the unused token amount. Kepler checks the token resolver's final used amount, so a refunded stake is never reported as successful.
 - Expose `get_position({account_id}) -> {staked, unstaked, withdrawable}`, with all values as strings in 6-decimal atomic units, including accrued rewards if applicable.
 - Expose `unstake({amount})` and `withdraw({amount})`, with 1 yoctoNEAR attached. Withdrawal must transfer actual USDT back to the caller, and complete its transfer promise before returning.
 
@@ -262,7 +266,7 @@ Market-reference swaps save the observed prices, exact payout, minimum output, a
 
 Pre-fund and authorize the agent wallet, then record one complete research-to-payment loop from the [judge walkthrough](#core-walkthrough-do-x--see-y). Show the directive, cited result, verification decision, escrow receipt and recipient in the explorer. Include a blocked unapproved-recipient request or `Withdraw 21 NEAR`, then one optional swap or staking command. Rejected commands have no confirmed on-chain receipt; inspect the rejection in the conversation rather than claiming it is a paid ledger entry.
 
-For the hackathon's public demo post, state that Mandate was built at NEAR HACKATHON, include **@NEARProtocol** and **#NEARHackathon**, attach the recording and link the public repository and hosted demo. Keep the user action and its visible result central. A local-only demo needs video so judges can inspect the behavior without access to your machine.
+For the hackathon's public demo post, state that Kepler was built at NEAR HACKATHON, include **@NEARProtocol** and **#NEARHackathon**, attach the recording and link the public repository and hosted demo. Keep the user action and its visible result central. A local-only demo needs video so judges can inspect the behavior without access to your machine.
 
 ---
 
@@ -334,7 +338,7 @@ Use the existing contract addresses for the judge walkthrough. Deploying a custo
 npx tsx src/server.ts
 ```
 
-Expected startup output: `[Mandate] Running at http://localhost:3000`. Open that URL in a current browser and follow the [judge guide](#judge-guide). Port 3000 must be available; `VERCEL` should be unset for this local server command. On Vercel, the exported request handler is used instead of starting a listener, and the deployment builds the Meteor bundle.
+Expected startup output: `[Kepler] Running at http://localhost:3000`. Open that URL in a current browser and follow the [judge guide](#judge-guide). Port 3000 must be available; `VERCEL` should be unset for this local server command. On Vercel, the exported request handler is used instead of starting a listener, and the deployment builds the Meteor bundle.
 
 In another terminal, this configuration check requires no wallet signature or transaction:
 
@@ -369,7 +373,7 @@ Checks on October 29, 2026 used an isolated faucet-funded account. They exercise
 | `Stake 0.1 NEAR`, then `Unstake 0.1 NEAR` | Validator stake and unstake confirmed; withdrawal remains subject to epoch cooldown | [Stake](https://testnet.nearblocks.io/txns/8Q7rokBCRbTPGuVM95C9Z656vMDz4JGQpEHkZsk46cot), [unstake](https://testnet.nearblocks.io/txns/28egx2UxSU6t8uh9oZdeLNi8FmhFinD1wS6FLNc4PERQ) |
 | `Stake 5 USDT`, `Unstake 5 USDT`, then `Claim 5 USDT` | Full 5 Test USDT principal returned after the vault cooldown | [Stake](https://testnet.nearblocks.io/txns/618BnrTHubj9MmjhRqUddKLNwR7DZZEFEkEE3X85jXK3), [unstake](https://testnet.nearblocks.io/txns/Dy39yZdE5ak2dStqQMyttceSLLhT1xsboR4ZuR5Eh5sZ), [withdrawal](https://testnet.nearblocks.io/txns/J9SHqX7yVjtUGdp3Ndbr6WEPbSN5UM7HAvnEfdCT732z) |
 | `Swap 0.1 NEAR for USDT` | Ref Finance delivered 0.474829 Test USDT; receipt output matched the agent balance increment | [DEX swap](https://testnet.nearblocks.io/txns/F5yzBy3tBd5MsM561nJAvNFCPQEABhwQN65wFRB7eZEf) |
-| `Swap 0.1 USDT for NEAR` | Ref Finance delivered 0.021753018819680804033633 wrapped NEAR, then Mandate withdrew it as native NEAR | [DEX swap](https://testnet.nearblocks.io/txns/9McpDHJZjNL9qdk7GVwTv83egnSEwrhj6WH6bjjuG9C3), [native withdrawal](https://testnet.nearblocks.io/txns/4AtJ5LKoQRBChdEJZLCsbwFzeJ1CmXt8R6oaNjZF5b8i) |
+| `Swap 0.1 USDT for NEAR` | Ref Finance delivered 0.021753018819680804033633 wrapped NEAR, then Kepler withdrew it as native NEAR | [DEX swap](https://testnet.nearblocks.io/txns/9McpDHJZjNL9qdk7GVwTv83egnSEwrhj6WH6bjjuG9C3), [native withdrawal](https://testnet.nearblocks.io/txns/4AtJ5LKoQRBChdEJZLCsbwFzeJ1CmXt8R6oaNjZF5b8i) |
 
 The deployed vault source is in `staking-contract/`: [deployment receipt](https://testnet.nearblocks.io/txns/DFxCh5QBfs42fEbX8447Z2f9GGoVgEFhGQFFFwFjL5m8). Ref Finance liquidity was funded on-chain: [liquidity receipt](https://testnet.nearblocks.io/txns/Az2oBebT2zPj9kPzQPhG1zXhNd5e4SEcDLCEARTdyPBz). These are recorded historical checks, separate from the commands a judge runs against current providers. This prototype uses local deterministic specialists with free public research and actual testnet settlement.
 

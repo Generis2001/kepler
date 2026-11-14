@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { PublicKey, baseDecode, JsonRpcProvider } from 'near-api-js';
 
 export function requestMessage(account: string, method: string, pathname: string, body: string, timestamp: string, approval = false) {
-  const message = `Mandate wallet request\n${account}\n${method}\n${pathname}\n${timestamp}\n${createHash('sha256').update(body).digest('hex')}`;
+  const message = `Kepler wallet request\n${account}\n${method}\n${pathname}\n${timestamp}\n${createHash('sha256').update(body).digest('hex')}`;
   return approval ? message + '\n\nApprove this agent action:\n' + body : message;
 }
 
@@ -25,7 +25,7 @@ export async function authorizeWalletRequest(provider: JsonRpcProvider, account:
     if (nonce.length !== 32) throw new Error('Invalid wallet message nonce.');
     const str = (value: string) => { const bytes = Buffer.from(value); const length = Buffer.alloc(4); length.writeUInt32LE(bytes.length); return Buffer.concat([length, bytes]); };
     const tag = Buffer.alloc(4); tag.writeUInt32LE(2147483648 + 413);
-    payload = createHash('sha256').update(Buffer.concat([tag, str(new TextDecoder().decode(message)), nonce, str('mandate'), Buffer.from([0])])).digest();
+    payload = createHash('sha256').update(Buffer.concat([tag, str(new TextDecoder().decode(message)), nonce, str('Kepler'), Buffer.from([0])])).digest();
     signatureBytes = Buffer.from(signature, 'base64');
   }
   if (!PublicKey.fromString(publicKey).verify(payload, signatureBytes)) throw new Error('Invalid wallet signature.');

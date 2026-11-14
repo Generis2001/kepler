@@ -65,7 +65,7 @@ export async function runAutonomousMandate(opts: MandateRunOptions = {}): Promis
   const goal = opts.goal?.trim() || 'Compare NEAR and USDT market prices and pool liquidity on Ref Finance.';
   if (goal.length > 6000) throw new Error('Keep directives under 6,000 characters.');
   const id = opts.id || 'mandate_' + randomUUID();
-  if (!/^[a-zA-Z0-9_-]{8,100}$/.test(id)) throw new Error('Invalid Mandate directive ID.');
+  if (!/^[a-zA-Z0-9_-]{8,100}$/.test(id)) throw new Error('Invalid Kepler directive ID.');
   const payment = researchPaymentRequest(goal);
   const researchGoal = payment?.researchGoal || goal;
   const topic = researchGoal.replace(/(?:spend(?:\s+up\s+to)?|budget(?:\s+of)?|no more than|up to|per[- ]agent\s+cap(?:\s+of)?)\s*\d+(?:\.\d+)?\s+(?:testnet\s+)?NEAR/gi, '').trim();

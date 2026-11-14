@@ -1,10 +1,12 @@
-# Mandate submission copy
+# Kepler submission copy
 
-Project: **Mandate — Your intent, in motion.**
+Project: **Kepler — Your intent, in motion.**
 
-Repository: https://github.com/Generis2001/mandate
+Repository: https://github.com/Generis2001/kepler
 
 Hosted testnet demo: https://mandateme.vercel.app
+
+Kepler is the new project and repository name. The hosted demo link, functionality, deployed contracts, and recorded receipts are unchanged.
 
 License: [MIT](LICENSE)
 
@@ -20,11 +22,11 @@ The requested track array is `["defi", "agents", "business"]`. Use these three t
 
 ## Short description
 
-Mandate is an onchain workspace on NEAR for DeFi treasury operations, specialist-agent payments, and autonomous business research within spending limits the user controls.
+Kepler is an onchain workspace on NEAR for DeFi treasury operations, specialist-agent payments, and autonomous business research within spending limits the user controls.
 
 ## Project description
 
-Businesses need to turn directives into verified work and payments without giving an agent unrestricted access to their funds. Mandate combines a separate agent treasury, specialist research, evidence verification, approved payees, and budget-limited NEAR escrow in one workspace.
+Businesses need to turn directives into verified work and payments without giving an agent unrestricted access to their funds. Kepler combines a separate agent treasury, specialist research, evidence verification, approved payees, and budget-limited NEAR escrow in one workspace.
 
 For Unstoppable DeFi, users deposit, withdraw, swap, send, stake, unstake, and collect matured funds through natural-language commands and wallet controls. Default swaps copy a live NEAR/USDT market reference into actual testnet treasury payouts; an explicit Ref Finance mode executes reserve-based pool trades. Quotes show their rate, source, minimum received, and expiry, while confirmations show the exact token amount and transaction receipt.
 
@@ -46,6 +48,6 @@ The public demo post should identify NEAR HACKATHON, include @NEARProtocol and #
 
 ## Existing submission changes
 
-The official [change-request page](https://nearhackathon.com/request-changes) handles updates to an existing submission. Select Tracks and request **Unstoppable DeFi, Agent Economy, and Autonomous Business**. Organizers review requests manually; updating this repository does not itself change the saved application. If the request has already been sent, wait for its application rather than submitting another application.
+The official [change-request page](https://nearhackathon.com/request-changes) handles updates to an existing submission. Request the project-name change from **Mandate** to **Kepler** and the repository-link update to **https://github.com/Generis2001/kepler**, keeping the hosted demo link above. For a track update, request **Unstoppable DeFi, Agent Economy, and Autonomous Business**. Organizers review requests manually; updating this repository does not itself change the saved application. Update the existing submission rather than submitting another application.
 
 This document contains public project copy, not a submission payload or a record that the organizers have applied the track change. Check the live [hackathon instructions](https://nearhackathon.com/HACKATHON.md) before completing a submission or change request.

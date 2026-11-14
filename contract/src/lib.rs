@@ -1,4 +1,4 @@
-//! Mandate escrow.
+//! Kepler escrow.
 //!
 //! An owner funds a mandate with NEAR. Only a designated verifier account can release
 //! payments, and the contract itself enforces: total budget, per-agent cap, recipient

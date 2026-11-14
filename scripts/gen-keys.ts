@@ -6,7 +6,7 @@ import { chmodSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
  * and to .env (treasury + verifier only, if .env does not exist). Secrets are never printed.
  *
  * Usage: npm run gen-keys -- <prefix>
- * Example: npm run gen-keys -- mandate-gen   ->  mandate-gen-treasury.testnet, ...
+ * Example: npm run gen-keys -- kepler-gen   ->  kepler-gen-treasury.testnet, ...
  * Then create each printed account (see README) using its printed PUBLIC key, and fund the treasury.
  */
 const prefix = process.argv[2];

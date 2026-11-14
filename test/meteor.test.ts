@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createClient } from '../src/browser/meteor.js';
 
 const sdk = vi.hoisted(() => ({
@@ -20,17 +20,31 @@ const config = { network: 'testnet' as const, authReceiver: 'treasury.testnet', 
 const account = { identifier: { blockchain: 'near', network: 'testnet', accountId: 'alice.testnet' } };
 beforeEach(() => {
   vi.resetAllMocks();
+  vi.stubGlobal('location', { origin: 'https://kepler.example' });
   sdk.initialize.mockResolvedValue(undefined);
   sdk.createAction.mockImplementation(async () => ({ promptForExecution: sdk.prompt }));
   sdk.getAccount.mockResolvedValue(account);
 });
+afterEach(() => vi.unstubAllGlobals());
 
 describe('official Meteor Wallet adapter', () => {
   it('prompts for each message approval and includes its exact account and request', async () => {
     const proof = { accountId: 'alice.testnet', publicKey: { toString: () => 'ed25519:wallet-key' }, signature: new Uint8Array([1, 2]) };
     sdk.prompt.mockResolvedValue(proof);
     const client = await createClient(config);
-    const params = { message: 'Approve this agent action: withdraw 1 NEAR', recipient: 'mandate', nonce: new Uint8Array(32) };
+    expect(sdk.initialize).toHaveBeenCalledWith({
+      storage: { name: 'browser-storage' },
+      mobileBridge: {
+        enabled: false,
+        partnerMetadata: {
+          name: 'Kepler',
+          description: 'Your NEAR wallet and public-source research workspace.',
+          iconUrl: 'https://kepler.example/assets/kepler-favicon.svg',
+          originUrl: 'https://kepler.example'
+        }
+      }
+    });
+    const params = { message: 'Approve this agent action: withdraw 1 NEAR', recipient: 'Kepler', nonce: new Uint8Array(32) };
     await client.signMessage('alice.testnet', params);
     await client.signMessage('alice.testnet', params);
     expect(sdk.createAction).toHaveBeenCalledTimes(2);
@@ -44,7 +58,7 @@ describe('official Meteor Wallet adapter', () => {
     sdk.getAccount.mockResolvedValue(undefined);
     sdk.prompt.mockResolvedValue({ identifier: { ...account.identifier, accountId: 'bob.testnet' } });
     const client = await createClient(config);
-    await expect(client.signMessage('alice.testnet', { message: 'Withdraw 1 NEAR', recipient: 'mandate', nonce: new Uint8Array(32) })).rejects.toThrow('alice.testnet');
+    await expect(client.signMessage('alice.testnet', { message: 'Withdraw 1 NEAR', recipient: 'Kepler', nonce: new Uint8Array(32) })).rejects.toThrow('alice.testnet');
     expect(sdk.createAction).toHaveBeenCalledTimes(1);
     expect(sdk.createAction.mock.calls[0][0].id).toBe('near::sign_in');
   });
@@ -58,7 +72,7 @@ describe('official Meteor Wallet adapter', () => {
       id: 'near::sign_in', input: {
         target: { blockchain: 'near', network },
         addFunctionCallKey: { publicKey: 'ed25519:auth-key', contractId: config.authReceiver,
-          allowMethods: { anyMethod: false, methodNames: ['mandate_auth'] } }
+          allowMethods: { anyMethod: false, methodNames: ['kepler_auth'] } }
       }
     });
   });

@@ -36,7 +36,7 @@ export function evaluatePayment(
     }
   }
 
-  if (mandate.status !== "active") deny("MANDATE_NOT_ACTIVE", "Mandate is closed.");
+  if (mandate.status !== "active") deny("MANDATE_NOT_ACTIVE", "Directive is closed.");
   if (req.amount <= 0n) deny("INVALID_AMOUNT", "Amount must be a positive integer number of cents.");
   if (req.asset !== mandate.allowedAsset)
     deny("ASSET_NOT_ALLOWED", `Asset ${req.asset} is not permitted (allowed: ${mandate.allowedAsset}).`);

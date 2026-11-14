@@ -229,7 +229,7 @@ export async function handleRequest(req: http.IncomingMessage, res: http.ServerR
             return json(deleted ? 200 : 404, deleted ? { success: true } : { error: 'Conversation not found.' });
           }
           if (!Array.isArray(payload.messages) || payload.messages.some((message: any) => !message || !['user','assistant'].includes(message.role))) return json(400, { error: 'A valid message array is required.' });
-          await store.saveConversation(payload.id, userAccount, String(payload.title || 'Mandate Session').slice(0,120), payload.messages);
+          await store.saveConversation(payload.id, userAccount, String(payload.title || 'Kepler Session').slice(0,120), payload.messages);
           return json(200, { success: true });
         } catch { return json(503, { error: 'Conversation could not be saved. Your local backup will retry syncing.' }); }
       });
@@ -294,7 +294,7 @@ export async function handleRequest(req: http.IncomingMessage, res: http.ServerR
 
 
     try {
-      const refund = prompt.trim().match(/^(?:mandate\s+)?refund escrow (m_[a-f0-9]{40})$/i);
+      const refund = prompt.trim().match(/^(?:(?:kepler|mandate)\s+)?refund escrow (m_[a-f0-9]{40})$/i);
       if (refund) {
         await verifyWalletRequest(agentWallet.provider, userAccount, 'POST', url.pathname, body, req.headers);
         const operation = await verifiedEscrow.refund(userAccount, refund[1].toLowerCase());
@@ -306,7 +306,7 @@ export async function handleRequest(req: http.IncomingMessage, res: http.ServerR
       if (command) {
         if (command.action === 'deposit') {
           const deposit = await agentWallet.prepareDeposit(userAccount, command.asset, command.amount);
-          return json(200, { type: 'wallet_deposit', deposit, message: `Deposit **${command.amount} ${command.asset}** into your Mandate agent wallet. Sign the transfer in your linked wallet to complete it.` });
+          return json(200, { type: 'wallet_deposit', deposit, message: `Deposit **${command.amount} ${command.asset}** into your Kepler agent wallet. Sign the transfer in your linked wallet to complete it.` });
         }
         await verifyWalletRequest(agentWallet.provider, userAccount, 'POST', url.pathname, body, req.headers);
         if (command.action === 'send' && !(await store.isAllowed(command.recipient!, userAccount))) {
@@ -318,12 +318,12 @@ export async function handleRequest(req: http.IncomingMessage, res: http.ServerR
         const receipts = operation.txHashes.map(hash => `[View transaction](${agentWallet.explorer(hash)})`).join(' · ');
         return json(200, { type: 'text', operation,
           message: operation.status === 'confirmed'
-            ? `**${command.action.toUpperCase()} confirmed:** ${command.amount} ${command.asset}.\n\n${command.action === 'unstake' ? 'Unstaking has started. Funds return to your agent wallet after the provider cooldown; Mandate checks for available withdrawals while this workspace is open.\n\n' : ''}${command.action === 'swap' ? `Received **${receivedSwapAmount(operation)} ${command.asset === 'NEAR' ? 'Test USDT' : 'NEAR'}** ${operation.market ? 'at the observed NEAR/USDT market rate with testnet treasury settlement' : operation.dex ? 'through the Ref Finance testnet pool' : 'through the fixed-rate demonstration treasury'}. The funds remain in your agent wallet.\n\n` : ''}${receipts}`
+            ? `**${command.action.toUpperCase()} confirmed:** ${command.amount} ${command.asset}.\n\n${command.action === 'unstake' ? 'Unstaking has started. Funds return to your agent wallet after the provider cooldown; Kepler checks for available withdrawals while this workspace is open.\n\n' : ''}${command.action === 'swap' ? `Received **${receivedSwapAmount(operation)} ${command.asset === 'NEAR' ? 'Test USDT' : 'NEAR'}** ${operation.market ? 'at the observed NEAR/USDT market rate with testnet treasury settlement' : operation.dex ? 'through the Ref Finance testnet pool' : 'through the fixed-rate demonstration treasury'}. The funds remain in your agent wallet.\n\n` : ''}${receipts}`
             : operation.status === 'failed'
               ? `**Transaction failed:** ${operation.error || 'The transaction was rejected.'}\n\n${receipts}\n\nOperation: \`${operation.id}\`.`
               : `**Transaction needs review:** ${operation.error || operation.status}.\n\n${receipts}\n\nOperation: \`${operation.id}\`. Further spending is paused until its on-chain status is reconciled.` });
       }
-      if (/^(?:please\s+)?(?:mandate[, :]*)?\s*(?:stake|unstake|withdraw|deposit|swap|exchange|send|transfer|pay|fund)\b/i.test(lower)) {
+      if (/^(?:please\s+)?(?:(?:kepler|mandate)[, :]*)?\s*(?:stake|unstake|withdraw|deposit|swap|exchange|send|transfer|pay|fund)\b/i.test(lower)) {
         return json(200, { type: 'text', message: 'Use a single command such as **Deposit 2 NEAR**, **Withdraw 5 USDT**, **Stake 1 NEAR**, **Unstake 3 USDT**, or **Send 2 USDT to alice.testnet**.' });
       }
     } catch (e: any) { return json(200, { type: 'text', message: e.message }); }
@@ -338,7 +338,7 @@ export async function handleRequest(req: http.IncomingMessage, res: http.ServerR
         type: 'text',
         message: `💧 **NEAR Testnet Faucet:**\n\n` +
           `You can request free Testnet NEAR by visiting **[near-faucet.io](https://near-faucet.io/)** (or clicking the **Faucet** button in the top navigation bar).\n\n` +
-          `Once claimed into your connected wallet, deposit the funds into your **Mandate Treasury** (Agentic Wallet) to authorize autonomous agent execution, token swaps, and policy transfers.`
+          `Once claimed into your connected wallet, deposit the funds into your **Kepler Treasury** (Agentic Wallet) to authorize autonomous agent execution, token swaps, and policy transfers.`
       }));
     }
 
@@ -346,7 +346,7 @@ export async function handleRequest(req: http.IncomingMessage, res: http.ServerR
       try {
         const wallet = await agentWallet.snapshot(userAccount);
         return json(200, { type: 'text', ...wallet,
-          message: `**Mandate agent wallet:** \`${wallet.accountId}\`\n\nAvailable: **${Number(wallet.balanceNear).toFixed(4)} NEAR** · **${wallet.userUsdt} Test USDT**.\n\nStaked: **${wallet.staking.NEAR.staked} NEAR** · **${wallet.staking.USDT.staked} Test USDT**.\n\nLinked wallet: \`${userAccount}\` · ${wallet.linked.near} NEAR · ${wallet.linked.usdt} Test USDT.` });
+          message: `**Kepler agent wallet:** \`${wallet.accountId}\`\n\nAvailable: **${Number(wallet.balanceNear).toFixed(4)} NEAR** · **${wallet.userUsdt} Test USDT**.\n\nStaked: **${wallet.staking.NEAR.staked} NEAR** · **${wallet.staking.USDT.staked} Test USDT**.\n\nLinked wallet: \`${userAccount}\` · ${wallet.linked.near} NEAR · ${wallet.linked.usdt} Test USDT.` });
       } catch (e: any) { return json(503, { type: 'text', message: e.message }); }
     }
 
@@ -375,18 +375,18 @@ export async function handleRequest(req: http.IncomingMessage, res: http.ServerR
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({
         type: 'security_notice',
-        message: '🔒 Private keys are strictly quarantined in the backend and cannot be exported. Mandate executes transactions autonomously using its treasury and smart contract.'
+        message: '🔒 Private keys are strictly quarantined in the backend and cannot be exported. Kepler executes transactions autonomously using its treasury and smart contract.'
       }));
     }
 
     // Case G: Greeting, Capabilities, and Conversational Inquiries
     const isGreeting = !researching && (/^(hello|hi|hey|greetings|howdy|good\s+(morning|afternoon|evening|day)|yo\b|sup\b)/i.test(lower) ||
                        ['hello', 'hi', 'hey', 'hello there', 'hi there', 'hey there'].includes(lower.trim()));
-    const isHelpOrCapabilities = /^explain agents[?!.]*$/i.test(lower) || (!researching && /^(what can you do|who are you|how does (?:this|mandate) work|help|what is mandate|what are your agents)/i.test(lower));
+    const isHelpOrCapabilities = /^explain agents[?!.]*$/i.test(lower) || (!researching && /^(what can you do|who are you|how does (?:this|kepler|mandate) work|help|what is (?:kepler|mandate)|what are your agents)/i.test(lower));
     const isSmallTalk = !researching && /^(how are you|what's up|whats up|how do you do|thanks|thank you|ok|okay|cool|nice)\b/i.test(lower);
 
     if (isGreeting || isHelpOrCapabilities || isSmallTalk) {
-      const greetingMsg = "I am **Mandate**, your NEAR wallet and public-source research workspace.\n\n" +
+      const greetingMsg = "I am **Kepler**, your NEAR wallet and public-source research workspace.\n\n" +
         "- 🧭 **Orchestrator:** Plans the directive and records spending permissions.\n" +
         "- 🔍 **Researcher:** Searches online, reads relevant publications and follows policy pages and references to resolve evidence gaps. Source links are optional.\n" +
         "- 📊 **Analyst:** Builds cited answers and comparisons, calculates quantity estimates and prepares a recommendation.\n" +
@@ -407,11 +407,11 @@ export async function handleRequest(req: http.IncomingMessage, res: http.ServerR
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({
         type: 'greeting',
-        message: 'Hello! How can I assist with your autonomous business mandates today? Type a mandate directive or try: *"Find three suppliers of 100 office chairs..."*'
+        message: 'Hello! How can I assist with your autonomous business directives today? Type a directive or try: *"Find three suppliers of 100 office chairs..."*'
       }));
     }
 
-    // Case H: Autonomous Business Mandate Execution
+    // Case H: Autonomous Business Kepler Execution
     const streaming = payload.stream === true;
     const writeEvent = (event: unknown) => { if (!res.destroyed && !res.writableEnded) res.write(JSON.stringify(event) + '\n'); };
     try {
@@ -484,6 +484,6 @@ export default handleRequest;
 if (!process.env.VERCEL) {
   const server = http.createServer(handleRequest);
   server.listen(PORT, '0.0.0.0', () => {
-    console.log(`[Mandate] Running at http://localhost:${PORT}`);
+    console.log(`[Kepler] Running at http://localhost:${PORT}`);
   });
 }

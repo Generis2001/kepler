@@ -1,4 +1,4 @@
-/* Local authentication keys only sign Mandate requests; linked-wallet transfers stay in the wallet. */
+/* Local authentication keys only sign Kepler requests; linked-wallet transfers stay in the wallet. */
 (() => {
   const alphabet = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
   const b58 = bytes => {
@@ -60,10 +60,10 @@
     if (['/api/wallet/execute', '/api/wallet/reconcile', '/api/wallet/resume', '/api/swap/execute', '/api/allowlist'].includes(pathname)) return true;
     if (pathname !== '/api/chat' || typeof payload.message !== 'string') return false;
     const prompt = payload.message.trim();
-    const command = prompt.toLowerCase().replace(/^(?:please\s+)?(?:mandate[, :]*)?\s*/, '')
+    const command = prompt.toLowerCase().replace(/^(?:please\s+)?(?:(?:kepler|mandate)[, :]*)?\s*/, '')
       .match(/^(deposit|fund(?:\s+treasury)?(?:\s+with)?|withdraw|stake|unstake|claim|swap|exchange|pay|send|transfer)\s+([0-9]+(?:\.[0-9]+)?)\s+(?:test\s+)?(near|usdt)\b(.*)$/);
     if (command) return !/^(?:deposit|fund)/.test(command[1]);
-    if (/^(?:mandate\s+)?refund escrow m_[a-f0-9]{40}$/i.test(prompt) || /add\s+[a-z0-9._-]+\s+to\s+(?:my\s+)?allowlist/i.test(prompt)) return true;
+    if (/^(?:(?:kepler|mandate)\s+)?refund escrow m_[a-f0-9]{40}$/i.test(prompt) || /add\s+[a-z0-9._-]+\s+to\s+(?:my\s+)?allowlist/i.test(prompt)) return true;
     // Match the server's explicit, terminal fee clause. A budget is not a fee.
     const fee = prompt.match(/(?:^|[;,\n]|\.(?=\s)|\band\s+)\s*(?:escrow\s+((?:0|[1-9]\d*)(?:\.\d{1,24})?)\s+(?:testnet\s+)?NEAR\s+to\s+([a-z0-9._-]+)|(?:research\s+fee|(?:charge|authorize)\s+(?:a\s+|the\s+)?research\s+fee(?:\s+of)?)\s+((?:0|[1-9]\d*)(?:\.\d{1,24})?)\s+(?:testnet\s+)?NEAR(?:\s+to\s+([a-z0-9._-]+))?|pay\s+((?:0|[1-9]\d*)(?:\.\d{1,24})?)\s+(?:testnet\s+)?NEAR\s+for\s+research(?:\s+to\s+([a-z0-9._-]+))?)\s*[.!]?\s*$/i);
     return !!fee && /[1-9]/.test(fee[1] || fee[3] || fee[5]);
@@ -96,14 +96,14 @@
       const body = options.body || '';
       const timestamp = String(Date.now());
       const hash = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(body)));
-      const message = `Mandate wallet request\n${account}\n${method}\n${pathname}\n${timestamp}\n${Array.from(hash, n => n.toString(16).padStart(2, '0')).join('')}`;
+      const message = `Kepler wallet request\n${account}\n${method}\n${pathname}\n${timestamp}\n${Array.from(hash, n => n.toString(16).padStart(2, '0')).join('')}`;
       const auth = suppliedAuth || storedAuth(account);
       if (!suppliedAuth && needsFreshApproval(pathname, method, body, continuingUnstake, account)) {
         const version = authorizationVersion;
         if (localStorage.getItem('mandate_connected_wallet') !== account) throw new Error('Sign using your linked account.');
         const client = await getMeteorClient();
         const nonce = crypto.getRandomValues(new Uint8Array(32));
-        const proof = await client.signMessage(account, { message: message + '\n\nApprove this agent action:\n' + body, recipient: 'mandate', nonce });
+        const proof = await client.signMessage(account, { message: message + '\n\nApprove this agent action:\n' + body, recipient: 'Kepler', nonce });
         if (proof.accountId !== account) throw new Error('Sign using your linked account.');
         if (version !== authorizationVersion || localStorage.getItem('mandate_connected_wallet') !== account) throw new Error('Your linked wallet changed. Connect Meteor Wallet again.');
         headers.set('x-mandate-auth-type', 'nep413');
@@ -121,7 +121,7 @@
         const client = await getMeteorClient();
         if (await client.isConnected(account)) {
           const nonce = crypto.getRandomValues(new Uint8Array(32));
-          const proof = await client.signMessage(account, { message, recipient: 'mandate', nonce });
+          const proof = await client.signMessage(account, { message, recipient: 'Kepler', nonce });
           if (proof.accountId !== account) throw new Error('Sign using your linked account.');
           headers.set('x-mandate-auth-type', 'nep413');
           headers.set('x-mandate-public-key', proof.publicKey);

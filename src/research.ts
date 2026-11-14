@@ -204,7 +204,7 @@ export function analyzeResearch(research: ResearchResult) {
   const comparable = rows.filter(row => row.kind === 'published price' && row.value && row.currency);
   const currencies = new Set(comparable.map(row => row.currency));
   const lowest = currencies.size === 1 && comparable.length >= 2 ? [...comparable].sort((a,b) => comparePrices(a.value, b.value))[0] : undefined;
-  const recommendation = rows.some(row => row.kind === 'market price') ? 'These are public NEAR mainnet market observations. Pool reserves and TVL are not private fiat corridor liquidity. Testnet Mandate USDT is a separate demonstration token; this research does not trade or move funds.'
+  const recommendation = rows.some(row => row.kind === 'market price') ? 'These are public NEAR mainnet market observations. Pool reserves and TVL are not private fiat corridor liquidity. Testnet Kepler USDT is a separate demonstration token; this research does not trade or move funds.'
     : lowest ? `Lowest observed published price: **${markdown(lowest.label)}**, ${lowest.value} ${lowest.currency}. Confirm the exact specification, shipping, tax, stock and any quantity discount with the vendor before purchasing.`
     : 'The sources do not establish a comparable lowest supplier price. Compare specifications and obtain any missing commercial terms before committing funds.';
   const liquidity = research.sources.filter(source => source.url === REF_POOLS).flatMap(source => {

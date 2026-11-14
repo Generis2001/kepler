@@ -88,5 +88,5 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   const model = process.env.LOCAL_AI_MODEL || 'qwen3.5:0.8b';
   const server = createModelProxy({ token, model });
   server.requestTimeout = 125_000;
-  server.listen(11435, '127.0.0.1', () => process.stdout.write('Mandate authenticated model proxy listening on 127.0.0.1:11435\n'));
+  server.listen(11435, '127.0.0.1', () => process.stdout.write('Kepler authenticated model proxy listening on 127.0.0.1:11435\n'));
 }

@@ -57,7 +57,7 @@
     changed(record) {
       const id = record.id;
       const first = record.messages.find(message => message.role === 'user');
-      record.title = first ? first.text.slice(0,36) + (first.text.length > 36 ? '…' : '') : 'Mandate Session';
+      record.title = first ? first.text.slice(0,36) + (first.text.length > 36 ? '…' : '') : 'Kepler Session';
       record.updatedAt = new Date().toISOString();
       record.pending = true;
       record.version++;

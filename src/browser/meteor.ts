@@ -11,7 +11,18 @@ interface WalletTransaction {
 export async function createClient(config: WalletConfig) {
   setEnvConfig({ wallet_base_url: config.walletUrl });
   const meteor = new MeteorConnect();
-  await meteor.initialize({ storage: webpage_local_storage });
+  const origin = globalThis.location?.origin;
+  await meteor.initialize({
+    storage: webpage_local_storage,
+    mobileBridge: {
+      enabled: false,
+      partnerMetadata: {
+        name: 'Kepler',
+        description: 'Your NEAR wallet and public-source research workspace.',
+        ...(origin ? { iconUrl: `${origin}/assets/kepler-favicon.svg`, originUrl: origin } : {})
+      }
+    }
+  });
   const networkTarget = { blockchain: 'near' as const, network: config.network };
   const target = (accountId: string) => ({ ...networkTarget, accountId });
 
@@ -23,7 +34,7 @@ export async function createClient(config: WalletConfig) {
         ...(publicKey ? { addFunctionCallKey: {
           publicKey,
           contractId: config.authReceiver,
-          allowMethods: { anyMethod: false, methodNames: ['mandate_auth'] }
+          allowMethods: { anyMethod: false, methodNames: ['kepler_auth'] }
         } } : {})
       }
     });

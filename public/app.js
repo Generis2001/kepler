@@ -275,7 +275,7 @@ function updateAgentAction() {
   const explanations = {
     deposit: 'Sign the deposit in your linked wallet. Deposit NEAR first to activate the agent wallet and cover gas.',
     withdraw: 'Send funds from your agent wallet back to ' + (connectedWallet || 'your linked wallet') + '.',
-    stake: 'Stake from your agent wallet with Mandate’s staking provider.',
+    stake: 'Stake from your agent wallet with Kepler’s staking provider.',
     unstake: 'Start unstaking. Funds are collected after the provider cooldown while your authorized workspace is open.',
     claim: 'Withdraw funds whose staking cooldown has finished into your agent wallet.'
   };
@@ -618,7 +618,7 @@ async function loadLedger() {
           <td colspan="7" class="empty-td" style="padding:24px; text-align:center; color:var(--text-muted);">
             No settlement disbursements recorded for <code>${escapeHtml(currentAccount)}</code> yet.<br>
             <span style="font-size:12px; color:var(--text-muted); margin-top:4px; display:inline-block;">
-              Run an autonomous mandate or send NEAR to see live verified settlements.
+              Run an autonomous directive or send NEAR to see live verified settlements.
             </span>
           </td>
         </tr>
@@ -700,14 +700,15 @@ function renderConversationsList() {
     row.className = 'history-item' + (record.id === activeConversationId ? ' active' : '');
     const open = document.createElement('button');
     open.className = 'history-open-btn';
-    open.textContent = record.title || 'Mandate Session';
-    open.title = record.title || 'Mandate Session';
+    const title = !record.title || record.title === 'Mandate Session' ? 'Kepler Session' : record.title;
+    open.textContent = title;
+    open.title = title;
     open.style.overflow = 'hidden'; open.style.textOverflow = 'ellipsis'; open.style.whiteSpace = 'nowrap';
     if (record.id === activeConversationId) open.setAttribute('aria-current', 'true');
     open.addEventListener('click', () => switchConversation(record.id));
     const remove = document.createElement('button');
     remove.className = 'history-delete-btn';
-    remove.setAttribute('aria-label', 'Delete conversation: ' + record.title);
+    remove.setAttribute('aria-label', 'Delete conversation: ' + title);
     remove.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M9 6V4h6v2M5 6l1 14h12l1-14M10 10v6m4-6v6"/></svg>';
     remove.addEventListener('click', event => deleteConversation(event, record.id));
     row.append(open, remove); conversationsListContainer.append(row);
@@ -881,7 +882,7 @@ async function handleSubmit() {
     pendingMandates.delete(conversation.requestId);
     renderAssistantResponse(placeholderId, {
       type: 'text',
-      message: '❌ Error communicating with Mandate: ' + err.message
+      message: '❌ Error communicating with Kepler: ' + err.message
     }, true, conversation);
   }
 }
@@ -896,19 +897,19 @@ function appendUserMessage(text, record = true, requestId = undefined) {
   messagesStream.appendChild(row);
 }
 
-// Mandate loading indicator
+// Kepler loading indicator
 function appendAssistantLoading(id, request = null) {
   const row = document.createElement('div');
   row.className = 'message-row assistant';
   row.id = id;
   row.innerHTML = `
     <div class="assistant-avatar">
-      <svg class="mandate-mark" viewBox="0 0 48 48" aria-hidden="true"><use href="assets/mandate-mark.svg#mark"/></svg>
+      <svg class="kepler-mark" viewBox="0 0 48 48" aria-hidden="true"><use href="assets/kepler-mark.svg#mark"/></svg>
     </div>
     <div class="message-content">
       <div class="mandate-loader" role="status">
         <span class="loader-dots" aria-hidden="true"><span></span><span></span><span></span></span>
-        <span>Working on your mandate…</span>
+        <span>Working on your directive…</span>
       </div>
     </div>
   `;
@@ -932,7 +933,7 @@ function updateMandateProgress(id, request) {
   const open = content.querySelector('details')?.open || false;
   const last = request.steps.at(-1);
   const next = { Orchestrator: 'Researching sources…', Researcher: 'Comparing findings…', Analyst: 'Checking evidence…', Verifier: 'Finishing your report…' };
-  const label = last?.activity || next[last?.phase] || 'Working on your mandate…';
+  const label = last?.activity || next[last?.phase] || 'Working on your directive…';
   content.innerHTML = runDisclosure(label, `<h4>Agent workflow</h4>${request.steps.length ? runSteps(request.steps) : '<p>Waiting for the workflow to start.</p>'}`, true, open);
 }
 
@@ -949,7 +950,7 @@ function renderAssistantResponse(id, data, record = true, conversation = null) {
 
   const mandateAvatar = `
     <div class="assistant-avatar">
-      <svg class="mandate-mark" viewBox="0 0 48 48" aria-hidden="true"><use href="assets/mandate-mark.svg#mark"/></svg>
+      <svg class="kepler-mark" viewBox="0 0 48 48" aria-hidden="true"><use href="assets/kepler-mark.svg#mark"/></svg>
     </div>
   `;
 
@@ -1073,7 +1074,7 @@ function renderAssistantResponse(id, data, record = true, conversation = null) {
     const payout = result.payout;
     const sources = result.deliverable.sources || [];
     const tasks = result.delegation.map(task => `<li><strong>${escapeHtml(task.role)}</strong> · ${escapeHtml(task.status)}<br>${escapeHtml(task.description)}</li>`).join('');
-    const problems = currentWorkflow ? result.deliverable.verification.problems : ['This historical report predates live source verification. Run a new mandate to check its claims.'];
+    const problems = currentWorkflow ? result.deliverable.verification.problems : ['This historical report predates live source verification. Run a new directive to check its claims.'];
     const issues = problems.map(problem => `<li>${escapeHtml(problem)}</li>`).join('');
     let settlement = 'No research fee requested. No wallet funds were spent.';
     if (payout.status === 'confirmed' && payout.onchain && payout.txHash) {
@@ -1082,7 +1083,7 @@ function renderAssistantResponse(id, data, record = true, conversation = null) {
       settlement = `Escrow ${escapeHtml(payout.status)}. ${payout.reasons.map(reason => escapeHtml(reason.message)).join(' ')}${payout.explorerUrl ? ` <a href="${escapeHtml(payout.explorerUrl)}" target="_blank" rel="noopener noreferrer">View transaction ↗</a>` : ''}`;
     }
     if (!currentWorkflow) settlement = 'Historical settlement record. Source verification is unavailable for this report.' + (payout.explorerUrl ? ` <a href="${escapeHtml(payout.explorerUrl)}" target="_blank" rel="noopener noreferrer">View recorded receipt ↗</a>` : '');
-    const label = mismatchedHistory ? 'Saved report for another directive' : !currentWorkflow ? 'Historical research report' : result.mandate.status === 'completed' ? 'Mandate completed' : 'Mandate needs more evidence or settlement review';
+    const label = mismatchedHistory ? 'Saved report for another directive' : !currentWorkflow ? 'Historical research report' : result.mandate.status === 'completed' ? 'Kepler completed' : 'Kepler needs more evidence or settlement review';
     const open = el.querySelector('.mandate-run')?.open || false;
     const details = `<p class="run-directive">${escapeHtml(result.mandate.goal)}</p>
       ${currentWorkflow ? MandateResearch.feeReceipt(payout, result.budgetState.totalBudget) : '<h4>Settlement</h4><p>' + settlement + '</p>'}

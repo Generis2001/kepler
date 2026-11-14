@@ -343,7 +343,9 @@ describe('isolated on-chain agent wallets', () => {
 
 describe('single financial commands and exact amounts', () => {
   it.each(['NEAR', 'USDT'])('parses deposit, withdrawal, stake and unstake for %s', asset => {
-    for (const action of ['deposit', 'withdraw', 'stake', 'unstake']) expect(parseWalletCommand(`Mandate ${action} 2.5 ${asset}`)).toMatchObject({ action, amount: '2.5', asset });
+    for (const brand of ['Kepler', 'Mandate']) {
+      for (const action of ['deposit', 'withdraw', 'stake', 'unstake']) expect(parseWalletCommand(`${brand} ${action} 2.5 ${asset}`)).toMatchObject({ action, amount: '2.5', asset });
+    }
   });
   it('keeps swaps internal and rejects ambiguous or malformed commands', () => {
     expect(parseWalletCommand('Swap 2 NEAR for Test USDT')).toMatchObject({ action: 'swap', asset: 'NEAR' });

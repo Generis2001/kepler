@@ -105,7 +105,7 @@ async function showStatus() {
 
 function stop() {
   for (const name of ['tunnel', 'proxy', 'ollama']) stopOwned(name);
-  process.stdout.write('Mandate local model services stopped.\n');
+  process.stdout.write('Kepler local model services stopped.\n');
 }
 
 try {
