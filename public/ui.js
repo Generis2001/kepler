@@ -15,7 +15,7 @@
     const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
     themeButton.title = `Switch to ${next} theme`;
     themeButton.setAttribute('aria-label', themeButton.title);
-    document.querySelector('meta[name="theme-color"]').content = next === 'light' ? '#23271b' : '#f7faee';
+    document.querySelector('meta[name="theme-color"]').content = next === 'light' ? '#14232b' : '#f3f8fa';
   }
   updateThemeButton();
   themeButton.addEventListener('click', () => {
@@ -26,16 +26,17 @@
 
   function updateSidebar() {
     const open = !sidebar.classList.contains('collapsed');
+    const trigger = document.activeElement;
     openSidebar.setAttribute('aria-expanded', String(open));
     sidebar.inert = !open;
+    document.querySelector('.main-panel').inert = !!activeDialog || (mobile.matches && open);
     if (mobile.matches && open && !sidebarReturnFocus) {
-      sidebarReturnFocus = document.activeElement;
+      sidebarReturnFocus = trigger;
       document.getElementById('sidebarCloseBtn').focus({ preventScroll: true });
     } else if (!open && sidebarReturnFocus) {
       if (!activeDialog) sidebarReturnFocus.focus({ preventScroll: true });
       sidebarReturnFocus = null;
     }
-    document.querySelector('.main-panel').inert = !!activeDialog || (mobile.matches && open);
   }
   function applyViewport() {
     sidebar.classList.toggle('collapsed', mobile.matches);

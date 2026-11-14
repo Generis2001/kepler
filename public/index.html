@@ -10,7 +10,7 @@
   <meta property="og:description" content="Move funds, swap tokens, delegate research, and pay for verified work on NEAR within spending limits you control.">
   <meta property="og:url" content="https://mandateme.vercel.app">
   <meta property="og:type" content="website">
-  <meta name="theme-color" content="#f7faee">
+  <meta name="theme-color" content="#f3f8fa">
   <link rel="icon" href="assets/kepler-favicon.svg" type="image/svg+xml">
   <script>
     try { document.documentElement.dataset.theme = localStorage.getItem('mandate_theme') === 'dark' ? 'dark' : 'light'; } catch {}
@@ -20,7 +20,7 @@
 </head>
 <body>
   <div class="app-container">
-    <aside class="sidebar" id="sidebar" aria-label="Workspace navigation">
+    <aside class="sidebar collapsed" id="sidebar" aria-label="Workspace navigation">
       <div class="sidebar-brand-row">
         <a class="brand-wrap" href="/" aria-label="Kepler home">
           <svg class="kepler-mark" viewBox="0 0 48 48" aria-hidden="true"><use href="assets/kepler-mark.svg#mark"/></svg>
@@ -92,10 +92,10 @@
         <div class="sidebar-wallet-card disconnected" id="sidebarDisconnectedCard" role="button" tabindex="0" aria-label="Connect your NEAR wallet">
           <div class="wallet-connect-cta">
             <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-3"/><path d="M21 8h-6a4 4 0 0 0 0 8h6z"/><circle cx="16" cy="12" r="1" fill="currentColor" stroke="none"/></svg>
-            <span>Make yourself at home</span>
+            <span>Bring your wallet</span>
             <span class="wallet-connect-arrow" aria-hidden="true">↗</span>
           </div>
-          <span class="wallet-connect-description">Connect your wallet to get started.</span>
+          <span class="wallet-connect-description">Your funds. Your permissions.<br>A workspace ready when you are.</span>
           <span class="wallet-connect-label">Connect wallet <span aria-hidden="true">→</span></span>
         </div>
         <div class="sidebar-wallet-card connected" id="sidebarConnectedCard" style="display:none;">
@@ -132,7 +132,7 @@
     <main class="main-panel">
       <header class="top-nav">
         <div class="left-nav">
-          <button class="sidebar-open-btn" id="sidebarOpenBtn" title="Open sidebar" aria-label="Open sidebar" aria-controls="sidebar" aria-expanded="true">
+          <button class="sidebar-open-btn" id="sidebarOpenBtn" title="Open sidebar" aria-label="Open sidebar" aria-controls="sidebar" aria-expanded="false">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></svg>
           </button>
           <div class="workspace-breadcrumb"><span>Workspace</span><span class="breadcrumb-separator">/</span><span class="breadcrumb-current">Agent chat</span></div>
@@ -153,8 +153,9 @@
 
       <div class="chat-container" id="chatContainer">
         <div class="hero-screen" id="heroScreen">
-          <div class="hero-emblem" aria-hidden="true"><svg class="kepler-mark" viewBox="0 0 48 48"><use href="assets/kepler-mark.svg#mark"/></svg></div>
-          <div class="hero-eyebrow"><span class="terminal-prompt" aria-hidden="true">&gt;_</span> YOUR INTENT, IN MOTION</div>
+          <div class="hero-eyebrow"><span class="hero-orbit" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="12" rx="10" ry="5" transform="rotate(-35 12 12)"/><circle cx="12" cy="12" r="3"/><circle cx="20" cy="7" r="2"/></svg></span> YOUR ONCHAIN WORKSPACE</div>
+          <h1 class="hero-title">Your intent,<br><span>in motion.</span></h1>
+          <p class="hero-subtitle">Research, move funds, and pay for verified work.<br> One workspace. Your limits.</p>
         </div>
         <div class="messages-stream" id="messagesStream" role="log" aria-label="Conversation" aria-live="polite"></div>
       </div>
@@ -162,25 +163,26 @@
       <footer class="input-area">
         <div class="input-wrapper">
           <div class="input-box">
-            <textarea id="promptInput" placeholder="What would you like to set in motion?" rows="2" aria-label="Message Kepler"></textarea>
+            <label class="composer-label" for="promptInput">What’s your next move?</label>
+            <textarea id="promptInput" placeholder="Ask Kepler to research, swap, send, or stake…" rows="2" aria-label="Message Kepler"></textarea>
             <div class="composer-toolbar">
               <div class="composer-agent"><svg class="kepler-mark" viewBox="0 0 48 48" aria-hidden="true"><use href="assets/kepler-mark.svg#mark"/></svg><span>Kepler agent</span><span class="composer-network">NEAR Testnet</span></div>
               <div class="composer-send"><span class="enter-hint"><kbd>↵</kbd> to send</span><button class="send-btn" id="sendBtn" title="Send message" aria-label="Send message"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></button></div>
             </div>
           </div>
           <div class="welcome-suggestions">
-            <div class="suggestions-label">A place to start <span aria-hidden="true">↙</span></div>
+            <div class="suggestions-label">Start with something useful <span>Or write your own intent above</span></div>
             <div class="suggestions-grid">
+              <button class="suggestion-card" data-prompt="Research and analyze the benefits and risks of solar energy in Nigeria"><span class="card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5M8 11h5M8 8h3"/></svg></span><span class="card-text"><span class="card-title">Research a topic</span><span class="card-desc">Sources, analysis, and evidence</span></span><span class="card-arrow" aria-hidden="true">↗</span></button>
               <button class="suggestion-card" data-prompt="Swap 0.1 NEAR for Test USDT"><span class="card-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 7h16m-4-4 4 4-4 4M20 17H4m4-4-4 4 4 4"/></svg></span><span class="card-text"><span class="card-title">Swap tokens</span><span class="card-desc">NEAR → Test USDT</span></span><span class="card-arrow" aria-hidden="true">↗</span></button>
-              <button class="suggestion-card" data-prompt="Pay 7 NEAR to zeal.testnet (add to allowlist)"><span class="card-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m5 19 14-14M5 5h14v14"/></svg></span><span class="card-text"><span class="card-title">Make a payment</span><span class="card-desc">7 NEAR to zeal.testnet</span></span><span class="card-arrow" aria-hidden="true">↗</span></button>
               <button class="suggestion-card" data-prompt="Deposit 10 NEAR"><span class="card-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="15" rx="2"/><path d="M3 9h18M16 13v4m-2-2h4"/></svg></span><span class="card-text"><span class="card-title">Agent wallet</span><span class="card-desc">Deposit NEAR or USDT</span></span><span class="card-arrow" aria-hidden="true">↗</span></button>
-              <button class="suggestion-card" data-prompt="Show my payable allowlist"><span class="card-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3 3 7v5c0 5 9 9 9 9s9-4 9-9V7z"/><path d="m8 12 3 3 5-6"/></svg></span><span class="card-text"><span class="card-title">Manage payees</span><span class="card-desc">Your approved recipients</span></span><span class="card-arrow" aria-hidden="true">↗</span></button>
+              <button class="suggestion-card" data-prompt="Pay 7 NEAR to zeal.testnet (add to allowlist)"><span class="card-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m5 19 14-14M5 5h14v14"/></svg></span><span class="card-text"><span class="card-title">Make a payment</span><span class="card-desc">Send to an approved recipient</span></span><span class="card-arrow" aria-hidden="true">↗</span></button>
             </div>
           </div>
           <div class="input-disclaimer"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M12 3 3 7v5c0 5 9 9 9 9s9-4 9-9V7z"/><path d="m8 12 3 3 5-6"/></svg><span>Your limits. Every transaction.</span><span class="disclaimer-separator">·</span><span>Powered by NEAR</span></div>
         </div>
       </footer>
-      <div class="workspace-footnote" aria-hidden="true"><span>DESIGNED FOR INTENT.</span><span>BUILT FOR ACTION. ↗</span></div>
+      <div class="workspace-footnote"><span class="workspace-network"><span class="network-indicator" aria-hidden="true"></span>NEAR TESTNET</span><span>Human direction. Onchain execution.</span></div>
     </main>
   </div>
 
@@ -450,7 +452,7 @@
             </div>
 
             <!-- Rate Pill -->
-            <div style="display:flex; justify-content:space-between; align-items:center; background:var(--success-soft); border:1px solid var(--success-border); border-radius:8px; padding:8px 12px; font-size:12px; color:var(--success);">
+            <div class="swap-quote-row" style="display:flex; justify-content:space-between; align-items:center; background:var(--success-soft); border:1px solid var(--success-border); border-radius:8px; padding:8px 12px; font-size:12px; color:var(--success);">
               <strong id="swapRateText">Fetching rate…</strong>
               <button class="btn-subtle" id="refreshSwapQuoteBtn" type="button" style="font-size:11px;">Refresh quote</button>
             </div>

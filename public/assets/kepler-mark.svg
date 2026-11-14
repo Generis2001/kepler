@@ -2,5 +2,5 @@
   <symbol id="mark" viewBox="0 0 48 48">
     <path fill="currentColor" d="M8 10h9v11l12-11h12L26 24l16 14H29L17 27v11H8V10Z"/>
   </symbol>
-  <use href="#mark" color="#bce341"/>
+  <use href="#mark" color="#d8eff5"/>
 </svg>
