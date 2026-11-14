@@ -4,11 +4,11 @@
 
 **Kepler** is an onchain workspace for **Unstoppable DeFi**, **Agent Economy**, and **Autonomous Business**. A user sets a directive and spending constraints; specialist agents retrieve and verify public-source research, and an explicitly authorized fee settles through NEAR escrow. The same workspace manages a separate agent treasury for deposits, withdrawals, token swaps, payments, and staking, with confirmed testnet transaction receipts.
 
-Hosted testnet demo: **[https://mandateme.vercel.app](https://mandateme.vercel.app)**
+Hosted testnet demo: **[https://thekepler.vercel.app](https://thekepler.vercel.app)**
 
 Repository: **[Generis2001/kepler](https://github.com/Generis2001/kepler)**
 
-Kepler is the new name of this project. The hosted demo URL, deployed NEAR account IDs, database settings, and saved wallet data retain their original identifiers so existing balances, approvals, conversations, and receipts remain accessible. The workflows and functionality are unchanged.
+Kepler is the new name of this project, hosted at **thekepler.vercel.app**. Deployed NEAR account IDs, database settings, and saved wallet data retain their original identifiers so existing balances, approvals, conversations, and receipts remain accessible. The workflows and functionality are unchanged.
 
 ## Judge guide
 

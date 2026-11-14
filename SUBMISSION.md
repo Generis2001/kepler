@@ -4,9 +4,9 @@ Project: **Kepler — Your intent, in motion.**
 
 Repository: https://github.com/Generis2001/kepler
 
-Hosted testnet demo: https://mandateme.vercel.app
+Hosted testnet demo: https://thekepler.vercel.app
 
-Kepler is the new project and repository name. The hosted demo link, functionality, deployed contracts, and recorded receipts are unchanged.
+Kepler is the new project and repository name, hosted at thekepler.vercel.app. Functionality, deployed contracts, and recorded receipts are unchanged.
 
 License: [MIT](LICENSE)
 
